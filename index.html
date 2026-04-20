@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pilotbase | Flight Schedule Pro Mockup</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --panel: #10151d;
+    --panel-2: #141b25;
+    --panel-3: #1a2430;
+    --line: rgba(255,255,255,.08);
+    --text: #eef2f6;
+    --muted: #99a6b7;
+    --orange-1: #f26c2e;
+    --orange-2: #f3781f;
+    --orange-3: #f6a345;
+    --blue-1: #78b7ff;
+    --blue-2: #adcfff;
+    --green: #3dd598;
+    --red: #ff6b6b;
+    --yellow: #ffd166;
+    --shadow: 0 18px 50px rgba(0,0,0,.35);
+    --radius-xl: 28px;
+    --radius-lg: 20px;
+    --radius-md: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(circle at top right, rgba(242,108,46,.16), transparent 24%),
+      radial-gradient(circle at 0% 20%, rgba(120,183,255,.12), transparent 22%),
+      linear-gradient(180deg, #091017 0%, #0c1016 100%);
+    color: var(--text);
+    overflow: hidden;
+  }
+  button, input, select { font: inherit; }
+  .hidden { display: none !important; }
+  .app { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+  .sidebar {
+    background: linear-gradient(180deg, rgba(10,13,18,.96), rgba(15,20,28,.95));
+    border-right: 1px solid var(--line);
+    padding: 22px 18px;
+    overflow: hidden;
+    scrollbar-width: none;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+  .brand { display: flex; align-items: center; gap: 14px; padding: 8px 8px 18px 8px; }
+  .brand svg { width: 42px; height: 34px; display: block; }
+  .brand-word { display: flex; flex-direction: column; line-height: 1; }
+  .brand-word strong { font-size: 1.1rem; letter-spacing: .02em; }
+  .brand-word span { font-size: .76rem; color: var(--muted); margin-top: 6px; }
+  .nav-group { margin-top: 16px; }
+  .nav-label { font-size: .74rem; text-transform: uppercase; letter-spacing: .14em; color: #7d8a9c; padding: 10px 10px 8px; }
+  .nav-btn {
+    width: 100%; border: 0; color: #dfe8f1; background: transparent; padding: 13px 14px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-bottom: 6px; transition: .2s ease;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,.05); }
+  .nav-btn.active {
+    background: linear-gradient(135deg, rgba(242,108,46,.24), rgba(120,183,255,.16)), rgba(255,255,255,.04);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+  }
+  .nav-left { display: flex; align-items: center; gap: 12px; }
+  .nav-icon {
+    width: 32px; height: 32px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.05);
+    color: var(--blue-2); font-size: .98rem;
+  }
+  .nav-btn.active .nav-icon { background: linear-gradient(135deg, rgba(242,108,46,.35), rgba(246,163,69,.15)); color: white; }
+  .nav-count { font-size: .78rem; padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,.06); color: var(--muted); }
+  .sidebar-card {
+    margin-top: 18px; padding: 16px; border-radius: 22px; background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+    border: 1px solid var(--line);
+  }
+  .sidebar-card h4 { margin: 0 0 8px; font-size: .95rem; }
+  .sidebar-card p { margin: 0; color: var(--muted); font-size: .84rem; line-height: 1.45; }
+  .sidebar-card button { margin-top: 14px; width: 100%; }
+  .main { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+  .topbar {
+    height: 84px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px; background: rgba(8,12,18,.58); backdrop-filter: blur(16px);
+  }
+  .topbar h1 { margin: 0; font-size: 1.45rem; }
+  .subtitle { color: var(--muted); margin-top: 4px; font-size: .92rem; }
+  .top-actions { display: flex; align-items: center; gap: 12px; }
+  .search {
+    width: 320px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px;
+    border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--muted);
+  }
+  .search input { flex: 1; background: transparent; border: 0; outline: 0; color: white; }
+  .avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--orange-1), var(--orange-3)); display: grid; place-items: center; color: white; font-weight: 700; }
+  .content { overflow: auto; padding: 24px; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border: 1px solid var(--line); border-radius: var(--radius-lg); box-shadow: var(--shadow); }
+  .hero { display: grid; grid-template-columns: 1.3fr .9fr; gap: 18px; }
+  .hero-panel { padding: 28px; min-height: 260px; position: relative; overflow: hidden; }
+  .hero-panel:before {
+    content: ""; position: absolute; inset: -40px auto auto -40px; width: 240px; height: 240px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(242,108,46,.32), transparent 60%); pointer-events: none;
+  }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: .8rem; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.06); color: #dce6f2; border: 1px solid rgba(255,255,255,.06); }
+  .hero h2 { margin: 14px 0 8px; font-size: 2rem; line-height: 1.05; max-width: 13ch; }
+  .hero p { margin: 0; color: var(--muted); max-width: 58ch; line-height: 1.55; }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+  .btn { border: 0; padding: 12px 16px; border-radius: 14px; cursor: pointer; transition: transform .18s ease, opacity .18s ease; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: linear-gradient(135deg, var(--orange-1), var(--orange-2)); color: white; box-shadow: 0 12px 28px rgba(242,108,46,.28); }
+  .btn.secondary { background: rgba(255,255,255,.06); color: white; border: 1px solid var(--line); }
+  .hero-side { padding: 24px; display: grid; align-content: start; gap: 14px; }
+  .mini-stat { padding: 16px 18px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid var(--line); }
+  .mini-stat .label { color: var(--muted); font-size: .8rem; }
+  .mini-stat .value { font-size: 1.5rem; margin-top: 8px; font-weight: 700; }
+  .grid-4 { margin-top: 18px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 18px; }
+  .metric { padding: 20px; }
+  .metric .label { color: var(--muted); font-size: .84rem; }
+  .metric .value { margin-top: 8px; font-size: 1.7rem; font-weight: 750; }
+  .metric .delta { margin-top: 10px; font-size: .82rem; color: #cfe0f2; }
+  .grid-2 { margin-top: 18px; display: grid; grid-template-columns: 1.15fr .85fr; gap: 18px; }
+  .section-card { padding: 20px; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .section-head h3 { margin: 0; font-size: 1.02rem; }
+  .section-head p { margin: 4px 0 0; color: var(--muted); font-size: .84rem; }
+  .stack { display: grid; gap: 12px; }
+  .item { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px; border-radius: 16px; background: rgba(255,255,255,.03); border: 1px solid var(--line); }
+  .item .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--blue-1); box-shadow: 0 0 0 5px rgba(120,183,255,.13); }
+  .item .title { font-weight: 650; }
+  .item .meta { color: var(--muted); font-size: .84rem; margin-top: 4px; }
+  .badge { display: inline-flex; padding: 6px 10px; border-radius: 999px; font-size: .76rem; background: rgba(255,255,255,.06); color: #dbe6f1; border: 1px solid rgba(255,255,255,.06); }
+  .badge.green { background: rgba(61,213,152,.14); color: #9bf0cb; }
+  .badge.yellow { background: rgba(255,209,102,.14); color: #ffe6a1; }
+  .badge.red { background: rgba(255,107,107,.14); color: #ffb0b0; }
+  .schedule-shell { display: grid; grid-template-columns: 1fr 340px; gap: 18px; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .chip { padding: 10px 14px; border-radius: 14px; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: #dbe6f2; cursor: pointer; }
+  .chip.active { background: linear-gradient(135deg, rgba(242,108,46,.22), rgba(120,183,255,.12)); }
+  .select, .text { padding: 11px 13px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.05); color: white; }
+  select, option { background: #15202c; color: #eef2f6; }
+  input[type="date"], input[type="time"] { color-scheme: dark; }
+  .calendar-wrap { padding: 16px; overflow: hidden; }
+  .week-header { display: grid; grid-template-columns: 88px repeat(7, minmax(0,1fr)); gap: 10px; margin-bottom: 10px; }
+  .day-head { padding: 12px; border-radius: 16px; background: rgba(255,255,255,.03); border: 1px solid var(--line); text-align: center; }
+  .day-head strong { display: block; font-size: 1rem; }
+  .day-head span { color: var(--muted); font-size: .78rem; }
+  .calendar-grid { display: grid; grid-template-columns: 88px repeat(7, minmax(0,1fr)); gap: 10px; max-height: 780px; overflow: auto; padding-right: 6px; }
+  .time-cell { height: 78px; color: var(--muted); font-size: .8rem; padding-top: 6px; }
+  .slot {
+    height: 78px; border-radius: 16px; border: 1px dashed rgba(255,255,255,.06);
+    background: linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,.02)); position: relative; overflow: hidden;
+  }
+  .flight { position: absolute; inset: 8px; border-radius: 14px; padding: 9px 10px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 22px rgba(0,0,0,.28); overflow: hidden; }
+  .flight.ghost { opacity: .18; filter: grayscale(.2); box-shadow: none; }
+  .flight.ghost .route, .flight.ghost .foot { opacity: .88; }
+  .flight .code, .flight .route, .flight .foot span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .flight.orange { background: linear-gradient(180deg, rgba(242,108,46,.96), rgba(243,120,31,.88)); color: white; }
+  .flight.blue { background: linear-gradient(180deg, rgba(120,183,255,.92), rgba(79,132,210,.88)); color: white; }
+  .flight.yellow { background: linear-gradient(180deg, rgba(246,163,69,.95), rgba(232,136,26,.9)); color: #1f1405; }
+  .flight.green { background: linear-gradient(180deg, rgba(61,213,152,.92), rgba(25,155,108,.9)); color: #072118; }
+  .flight .code { font-weight: 800; letter-spacing: .02em; font-size: .84rem; }
+  .flight .route { font-size: .73rem; opacity: .95; }
+  .flight .foot { display: flex; justify-content: space-between; gap: 8px; font-size: .69rem; opacity: .92; }
+  .right-panel { padding: 20px; display: grid; gap: 16px; align-content: start; }
+  .alert { padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.03); }
+  .alert strong { display: block; margin-bottom: 6px; }
+  .alert p { margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.45; }
+  .quick-list { display: grid; gap: 10px; }
+  .quick-row { padding: 12px 13px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.03); }
+  .quick-row .top { display: flex; justify-content: space-between; gap: 10px; font-size: .88rem; }
+  .quick-row .meta { margin-top: 5px; color: var(--muted); font-size: .8rem; }
+  .cards-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+  .person-card, .aircraft-card, .training-card { padding: 18px; }
+  .person-top, .aircraft-top { display: flex; align-items: center; gap: 14px; }
+  .photo, .plane { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; font-weight: 700; background: linear-gradient(135deg, rgba(242,108,46,.35), rgba(120,183,255,.18)); }
+  .muted { color: var(--muted); }
+  .split { display: flex; justify-content: space-between; gap: 14px; margin-top: 14px; }
+  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .training-bar { height: 10px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; margin-top: 12px; }
+  .training-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--orange-1), var(--orange-3)); }
+  .login {
+    min-height: 100vh; display: grid; grid-template-columns: 1.05fr .95fr;
+    background: radial-gradient(circle at top left, rgba(246,163,69,.22), transparent 28%), radial-gradient(circle at 75% 25%, rgba(120,183,255,.14), transparent 26%), linear-gradient(135deg, #090d13, #0f141c 55%, #121924);
+  }
+  .login-left { padding: 52px 58px; display: flex; flex-direction: column; justify-content: space-between; }
+  .login-brand { display: flex; align-items: center; gap: 16px; }
+  .login-brand svg { width: 60px; height: 48px; }
+  .login-copy h2 { margin: 18px 0 10px; font-size: 3rem; line-height: .98; max-width: 10ch; }
+  .login-copy p { max-width: 55ch; color: #aab5c4; line-height: 1.6; }
+  .feature-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+  .feature-badge { padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: #dbe6f1; font-size: .86rem; }
+  .login-right { display: grid; place-items: center; padding: 34px; }
+  .login-card { width: min(520px, 100%); padding: 28px; border-radius: 30px; background: linear-gradient(180deg, rgba(16,21,29,.94), rgba(12,16,22,.94)); border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+  .login-card h3 { margin: 0 0 6px; font-size: 1.6rem; }
+  .login-card p { margin: 0 0 18px; color: var(--muted); }
+  .field { margin-top: 14px; }
+  .field label { display: block; margin-bottom: 8px; color: #dce7f1; font-size: .88rem; }
+  .field input, .field select { width: 100%; padding: 14px 15px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: white; outline: 0; }
+  .inline { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 12px; color: var(--muted); font-size: .86rem; }
+  .login-actions { display: grid; gap: 12px; margin-top: 20px; }
+  .subtle-link { color: var(--blue-2); cursor: pointer; }
+  .demo-panel { margin-top: 22px; padding: 16px; border-radius: 18px; background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)); border: 1px solid var(--line); }
+  .footer-note { color: #8a95a4; font-size: .84rem; }
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(5,8,12,.45); backdrop-filter: blur(8px); display: none; z-index: 30; }
+  .drawer-backdrop.open { display: block; }
+  .drawer {
+    position: fixed; top: 20px; right: 20px; width: min(500px, calc(100vw - 40px)); bottom: 20px;
+    background: linear-gradient(180deg, rgba(13,18,25,.98), rgba(10,14,20,.98)); border: 1px solid var(--line); border-radius: 28px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.48); transform: translateX(110%); transition: transform .25s ease; z-index: 40;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head { padding: 22px 22px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 14px; align-items: start; }
+  .drawer-body { padding: 20px 22px 24px; overflow: auto; }
+  .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+  .kpi-strip { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 14px; }
+  .kpi { padding: 14px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.03); }
+  .kpi .v { margin-top: 8px; font-size: 1.25rem; font-weight: 700; }
+  .timeline { display: grid; gap: 12px; margin-top: 14px; }
+  .timeline .step { padding: 14px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.03); }
+  .mobile-top { display: none; }
+  @media (max-width: 1180px) {
+    .hero, .grid-2, .schedule-shell, .cards-grid, .grid-4 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) {
+    body { overflow: auto; }
+    .app { grid-template-columns: 1fr; height: auto; }
+    .sidebar { display: none; }
+    .mobile-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--line); background: rgba(8,12,18,.84); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(16px); }
+    .topbar { height: auto; flex-direction: column; align-items: start; padding: 18px; }
+    .search { width: 100%; }
+    .login { grid-template-columns: 1fr; }
+    .login-left { padding: 28px 24px 10px; }
+    .login-right { padding: 20px; }
+    .field-grid, .kpi-strip { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="loginScreen" class="login">
+  <div class="login-left">
+    <div>
+      <div class="login-brand">
+        <svg height="985.51" width="1238.57" viewBox="0 0 1238.57 985.51" version="1.1" xmlns="http://www.w3.org/2000/svg" id="Layer_1">
+  <defs>
+    <style>
+      .st0 { fill: #f3781f; stroke: #f3781f; stroke-width: 0.5; }
+      .st1 { fill: #f26c2e; stroke: #f26c2e; stroke-width: 0.5; }
+      .st2 { fill: #f6a345; stroke: #f6a345; stroke-width: 0.5; }
+    </style>
+  </defs>
+
+  
+  <path d="M397.31,868.62c-154.62,0-280.42-125.79-280.42-280.42v-191.05h116.89v191.05c0,90.18,73.36,163.54,163.54,163.54s163.54-73.36,163.54-163.54v-190.89c0-154.63,125.8-280.43,280.42-280.43s280.42,125.8,280.42,280.43v197.71h-116.89v-197.71c0-90.18-73.36-163.54-163.54-163.54s-163.54,73.37-163.54,163.54v190.89c0,154.63-125.8,280.42-280.42,280.42Z" class="st0"></path>
+
+  
+  <path d="M397.31,751.74c90.18,0,163.54-73.36,163.54-163.54v-190.89c0-154.63,125.8-280.43,280.42-280.43s280.42,125.8,280.42,280.43v197.71h116.89v-197.71C1238.57,178.23,1060.34,0,841.27,0s-397.31,178.23-397.31,397.31v190.89c0,25.72-20.93,46.65-46.65,46.65s-46.65-20.93-46.65-46.65v-191.05h-116.89v191.05c0,90.18,73.36,163.54,163.54,163.54Z" class="st2"></path>
+
+  
+  <path d="M887.92,397.31v197.71h116.89v-197.71c0-90.18-73.36-163.54-163.54-163.54s-163.54,73.37-163.54,163.54v190.89c0,154.63-125.8,280.42-280.42,280.42s-280.42-125.79-280.42-280.42v-191.05H0v191.05c0,219.08,178.23,397.31,397.31,397.31s397.31-178.23,397.31-397.31v-190.89c0-25.73,20.93-46.66,46.65-46.66s46.65,20.93,46.65,46.66Z" class="st1"></path>
+</svg>
+
+        <div class="brand-word">
+          <strong>Pilotbase</strong>
+          <span>Flight ops, training, and reservations</span>
+        </div>
+      </div>
+      <div class="login-copy">
+        <div class="eyebrow">Modernized concept mockup</div>
+        <h2>Scheduling that finally feels operationally excellent.</h2>
+        <p>This prototype reimagines Flight Schedule Pro as a cleaner, more modern single page product with stronger scheduling, reservations, training visibility, instructor management, and aircraft readiness.</p>
+        <div class="feature-row">
+          <div class="feature-badge">Weekly schedule board</div>
+          <div class="feature-badge">Reservation creation flow</div>
+          <div class="feature-badge">Training status visibility</div>
+          <div class="feature-badge">Instructor utilization</div>
+          <div class="feature-badge">Aircraft readiness</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">Prototype theme built around the new Pilotbase orange system, with complementary aviation blues and slate neutrals. The cyan accent was intentionally removed.</div>
+  </div>
+  <div class="login-right">
+    <div class="login-card">
+      <h3>Welcome back</h3>
+      <p>Sign in to access scheduling, reservations, training progress, and fleet operations.</p>
+      <div class="field"><label>Email</label><input value="ken.rose@pilotbase.com" /></div>
+      <div class="field"><label>Password</label><input type="password" value="pilotbase-demo" /></div>
+      <div class="field"><label>Role</label><select id="roleSelect"><option>Operations Manager</option><option>Student Pilot</option><option>Instructor</option><option>Administrator</option></select></div>
+      <div class="inline"><span>SSO available for partner flight schools</span><span class="subtle-link">Need help?</span></div>
+      <div class="login-actions"><button class="btn primary" id="enterBtn">Enter Pilotbase</button><button class="btn secondary">View school status</button></div>
+      <div class="demo-panel"><strong>Demo highlights</strong><div class="kpi-strip"><div class="kpi"><div class="muted">Today flights</div><div class="v">186</div></div><div class="kpi"><div class="muted">Open reservations</div><div class="v">124</div></div><div class="kpi"><div class="muted">Training due</div><div class="v">34</div></div></div></div>
+    </div>
+  </div>
+</div>
+<div id="appShell" class="app hidden">
+  <aside class="sidebar">
+    <div class="brand"><svg height="985.51" width="1238.57" viewBox="0 0 1238.57 985.51" version="1.1" xmlns="http://www.w3.org/2000/svg" id="Layer_1">
+  <defs>
+    <style>
+      .st0 { fill: #f3781f; stroke: #f3781f; stroke-width: 0.5; }
+      .st1 { fill: #f26c2e; stroke: #f26c2e; stroke-width: 0.5; }
+      .st2 { fill: #f6a345; stroke: #f6a345; stroke-width: 0.5; }
+    </style>
+  </defs>
+
+  
+  <path d="M397.31,868.62c-154.62,0-280.42-125.79-280.42-280.42v-191.05h116.89v191.05c0,90.18,73.36,163.54,163.54,163.54s163.54-73.36,163.54-163.54v-190.89c0-154.63,125.8-280.43,280.42-280.43s280.42,125.8,280.42,280.43v197.71h-116.89v-197.71c0-90.18-73.36-163.54-163.54-163.54s-163.54,73.37-163.54,163.54v190.89c0,154.63-125.8,280.42-280.42,280.42Z" class="st0"></path>
+
+  
+  <path d="M397.31,751.74c90.18,0,163.54-73.36,163.54-163.54v-190.89c0-154.63,125.8-280.43,280.42-280.43s280.42,125.8,280.42,280.43v197.71h116.89v-197.71C1238.57,178.23,1060.34,0,841.27,0s-397.31,178.23-397.31,397.31v190.89c0,25.72-20.93,46.65-46.65,46.65s-46.65-20.93-46.65-46.65v-191.05h-116.89v191.05c0,90.18,73.36,163.54,163.54,163.54Z" class="st2"></path>
+
+  
+  <path d="M887.92,397.31v197.71h116.89v-197.71c0-90.18-73.36-163.54-163.54-163.54s-163.54,73.37-163.54,163.54v190.89c0,154.63-125.8,280.42-280.42,280.42s-280.42-125.79-280.42-280.42v-191.05H0v191.05c0,219.08,178.23,397.31,397.31,397.31s397.31-178.23,397.31-397.31v-190.89c0-25.73,20.93-46.66,46.65-46.66s46.65,20.93,46.65,46.66Z" class="st1"></path>
+</svg>
+<div class="brand-word"><strong>Pilotbase</strong><span>Flight Schedule Pro concept</span></div></div>
+    <div class="nav-group"><div class="nav-label">Workspace</div>
+      <button class="nav-btn active" data-view="home"><div class="nav-left"><div class="nav-icon">⌂</div><span>Home</span></div><span class="nav-count">4</span></button>
+      <button class="nav-btn" data-view="training"><div class="nav-left"><div class="nav-icon">✦</div><span>My Training</span></div><span class="nav-count">3</span></button>
+      <button class="nav-btn" data-view="schedule"><div class="nav-left"><div class="nav-icon">▦</div><span>Schedule</span></div><span class="nav-count">12</span></button>
+      <button class="nav-btn" data-view="instructors"><div class="nav-left"><div class="nav-icon">◎</div><span>Instructors</span></div><span class="nav-count">9</span></button>
+      <button class="nav-btn" data-view="aircraft"><div class="nav-left"><div class="nav-icon">✈</div><span>Aircraft</span></div><span class="nav-count">16</span></button>
+    </div>
+    <div class="nav-group"><div class="nav-label">Quick Actions</div>
+      <button class="nav-btn" id="quickReservation"><div class="nav-left"><div class="nav-icon">＋</div><span>New Reservation</span></div></button>
+      <button class="nav-btn" id="jumpToday"><div class="nav-left"><div class="nav-icon">◔</div><span>Jump to Today</span></div></button>
+    </div>
+    <div class="sidebar-card"><h4>Ops focus</h4><p>Friday afternoon has the heaviest training demand. Four conflicts need instructor or aircraft reassignment before final publication.</p><button class="btn primary" id="fixConflicts">Resolve conflicts</button></div>
+    <div class="sidebar-card"><h4>Why this direction</h4><p>The concept prioritizes cleaner navigation, reservation clarity, better density for schedule work, and richer readiness signals across people and fleet.</p></div>
+  </aside>
+  <main class="main">
+    <div class="mobile-top"><div class="brand" style="padding:0"><svg height="985.51" width="1238.57" viewBox="0 0 1238.57 985.51" version="1.1" xmlns="http://www.w3.org/2000/svg" id="Layer_1">
+  <defs>
+    <style>
+      .st0 { fill: #f3781f; stroke: #f3781f; stroke-width: 0.5; }
+      .st1 { fill: #f26c2e; stroke: #f26c2e; stroke-width: 0.5; }
+      .st2 { fill: #f6a345; stroke: #f6a345; stroke-width: 0.5; }
+    </style>
+  </defs>
+
+  
+  <path d="M397.31,868.62c-154.62,0-280.42-125.79-280.42-280.42v-191.05h116.89v191.05c0,90.18,73.36,163.54,163.54,163.54s163.54-73.36,163.54-163.54v-190.89c0-154.63,125.8-280.43,280.42-280.43s280.42,125.8,280.42,280.43v197.71h-116.89v-197.71c0-90.18-73.36-163.54-163.54-163.54s-163.54,73.37-163.54,163.54v190.89c0,154.63-125.8,280.42-280.42,280.42Z" class="st0"></path>
+
+  
+  <path d="M397.31,751.74c90.18,0,163.54-73.36,163.54-163.54v-190.89c0-154.63,125.8-280.43,280.42-280.43s280.42,125.8,280.42,280.43v197.71h116.89v-197.71C1238.57,178.23,1060.34,0,841.27,0s-397.31,178.23-397.31,397.31v190.89c0,25.72-20.93,46.65-46.65,46.65s-46.65-20.93-46.65-46.65v-191.05h-116.89v191.05c0,90.18,73.36,163.54,163.54,163.54Z" class="st2"></path>
+
+  
+  <path d="M887.92,397.31v197.71h116.89v-197.71c0-90.18-73.36-163.54-163.54-163.54s-163.54,73.37-163.54,163.54v190.89c0,154.63-125.8,280.42-280.42,280.42s-280.42-125.79-280.42-280.42v-191.05H0v191.05c0,219.08,178.23,397.31,397.31,397.31s397.31-178.23,397.31-397.31v-190.89c0-25.73,20.93-46.66,46.65-46.66s46.65,20.93,46.65,46.66Z" class="st1"></path>
+</svg>
+<div class="brand-word"><strong>Pilotbase</strong><span>Concept</span></div></div><button class="btn secondary" id="mobileReservation">New reservation</button></div>
+    <div class="topbar">
+      <div><h1 id="pageTitle">Home</h1><div class="subtitle" id="pageSubtitle">A cleaner control center for flight operations and training.</div></div>
+      <div class="top-actions"><div class="search"><span>⌕</span><input placeholder="Search flights, reservations, instructors, aircraft" /></div><button class="btn secondary" id="publishBtn">Publish week</button><div class="avatar">KR</div></div>
+    </div>
+    <div class="content">
+      <section class="view active" id="view-home">
+        <div class="hero"><div class="card hero-panel"><div class="eyebrow">Operations command center</div><h2>Beautifully organized flight scheduling.</h2><p>One clean place to manage upcoming flights, reservations, aircraft readiness, instructor capacity, and training activity without the clutter and fragmentation that slows people down today.</p><div class="btn-row"><button class="btn primary" data-nav="schedule">Open schedule board</button><button class="btn secondary" id="heroReservation">Create reservation</button></div></div><div class="card hero-side"><div class="mini-stat"><div class="label">Today utilization</div><div class="value">87%</div></div><div class="mini-stat"><div class="label">Open conflicts</div><div class="value">4</div></div><div class="mini-stat"><div class="label">Training completions this week</div><div class="value">23</div></div></div></div>
+        <div class="grid-4"><div class="card metric"><div class="label">Flights today</div><div class="value">124</div><div class="delta">+9% versus last Thursday</div></div><div class="card metric"><div class="label">Reservations pending</div><div class="value">38</div><div class="delta">12 require confirmation</div></div><div class="card metric"><div class="label">Aircraft available</div><div class="value">16 / 18</div><div class="delta">2 in maintenance window</div></div><div class="card metric"><div class="label">Instructor coverage</div><div class="value">92%</div><div class="delta">Strong through 4:00 PM</div></div></div>
+        <div class="grid-2"><div class="card section-card"><div class="section-head"><div><h3>Priority actions</h3><p>What needs attention before the schedule is finalized.</p></div><button class="btn secondary" data-nav="schedule">View board</button></div><div class="stack"><div class="item"><div class="dot" style="background:var(--red); box-shadow:0 0 0 5px rgba(255,107,107,.16)"></div><div><div class="title">Friday 2:00 PM instructor overlap</div><div class="meta">Ken Rose has a preferred reservation overlapping with a Laura Chen IFR block</div></div><span class="badge red">Urgent</span></div><div class="item"><div class="dot" style="background:var(--yellow); box-shadow:0 0 0 5px rgba(255,209,102,.16)"></div><div><div class="title">N812PB requires post flight inspection</div><div class="meta">Return to availability once signed off</div></div><span class="badge yellow">Watch</span></div><div class="item"><div class="dot" style="background:var(--green); box-shadow:0 0 0 5px rgba(61,213,152,.16)"></div><div><div class="title">23 students nearing solo milestone</div><div class="meta">Auto surfaced from progress engine</div></div><span class="badge green">Opportunity</span></div></div></div><div class="card section-card"><div class="section-head"><div><h3>Upcoming flights</h3><p>Today through the next few hours.</p></div><span class="badge">Live board</span></div><div class="quick-list"><div class="quick-row"><div class="top"><strong>PB 201</strong><span>8:30 AM</span></div><div class="meta">KPTK → Pattern work · C172 · Ken / Chen</div></div><div class="quick-row"><div class="top"><strong>PB 318</strong><span>9:00 AM</span></div><div class="meta">KPTK → KLAN · Cross country · PA28 · Rivera / Patel</div></div><div class="quick-row"><div class="top"><strong>PB 411</strong><span>9:30 AM</span></div><div class="meta">Simulator block · G1000 procedures · Bay 2</div></div><div class="quick-row"><div class="top"><strong>PB 122</strong><span>10:00 AM</span></div><div class="meta">Discovery flight · DA40 · Guest reservation</div></div></div></div></div>
+      </section>
+      <section class="view" id="view-training">
+        <div class="hero"><div class="card hero-panel"><div class="eyebrow">My training</div><h2>Keep pilots moving forward with clarity.</h2><p>Progress, currency, upcoming lessons, and training gaps should be obvious at a glance. This concept makes next steps more visible and less frustrating for students and instructors alike.</p><div class="btn-row"><button class="btn primary">View syllabus</button><button class="btn secondary">Open training history</button></div></div><div class="card hero-side"><div class="mini-stat"><div class="label">Stage progress</div><div class="value">68%</div></div><div class="mini-stat"><div class="label">Lessons completed</div><div class="value">14 / 21</div></div><div class="mini-stat"><div class="label">Medical & docs</div><div class="value">Current</div></div></div></div>
+        <div class="cards-grid" style="margin-top:18px"><div class="card training-card"><strong>Private Pilot Stage 2</strong><div class="muted" style="margin-top:6px">Flight maneuver proficiency and pattern consistency</div><div class="training-bar"><div class="training-fill" style="width:68%"></div></div><div class="split"><span class="muted">Next milestone</span><strong>Solo prep check</strong></div><div class="pill-row"><span class="badge green">On track</span><span class="badge">6 lessons left</span></div></div><div class="card training-card"><strong>Upcoming sessions</strong><div class="timeline"><div class="step"><strong>Thu 2:00 PM</strong><div class="muted">Takeoffs and landings · CFI Laura Chen · C172</div></div><div class="step"><strong>Sat 10:30 AM</strong><div class="muted">Ground school · Airspace and weather</div></div><div class="step"><strong>Tue 1:00 PM</strong><div class="muted">Simulator · Radio procedures</div></div></div></div><div class="card training-card"><strong>Readiness checks</strong><div class="timeline"><div class="step"><strong>Logbook audit</strong><div class="muted">All entries reconciled</div></div><div class="step"><strong>Written exam</strong><div class="muted">Target date next month</div></div><div class="step"><strong>Knowledge weak spots</strong><div class="muted">Weight and balance, nighttime minimums</div></div></div></div></div>
+      </section>
+      <section class="view" id="view-schedule"><div class="schedule-shell"><div><div class="toolbar"><div class="toolbar-left"><button class="chip active">Week</button><button class="chip">Day</button><button class="chip">Aircraft</button><button class="chip">Instructor</button><select class="select"><option>KPTK Main Campus</option><option>KARB Satellite</option></select><select class="select"><option>All programs</option><option>Private Pilot</option><option>Instrument</option><option>Commercial</option></select></div><div class="toolbar-right"><input class="text" value="Mar 16 to Mar 22, 2026" /><button class="btn secondary">Import blockouts</button><button class="btn primary" id="newResSchedule">New reservation</button></div></div><div class="alert" style="margin-bottom:14px"><strong>Ken visibility mode</strong><p>Ken Rose can see the full reservation landscape for situational awareness. His own reservations remain vivid and editable, while most shared reservations are ghosted and read only.</p></div><div class="card calendar-wrap"><div class="week-header"><div></div><div class="day-head"><strong>Mon</strong><span>16</span></div><div class="day-head"><strong>Tue</strong><span>17</span></div><div class="day-head"><strong>Wed</strong><span>18</span></div><div class="day-head"><strong>Thu</strong><span>19</span></div><div class="day-head"><strong>Fri</strong><span>20</span></div><div class="day-head"><strong>Sat</strong><span>21</span></div><div class="day-head"><strong>Sun</strong><span>22</span></div></div><div class="calendar-grid" id="calendarGrid"></div></div></div><div class="card right-panel"><div><div class="section-head" style="margin-bottom:10px"><div><h3>Reservation queue</h3><p>Ken can see shared scheduling pressure, while editable reservations are limited to his own blocks.</p></div><span class="badge">124 open</span></div><div class="quick-list"><div class="quick-row"><div class="top"><strong>Guest discovery block</strong><span class="badge yellow">Needs aircraft</span></div><div class="meta">Friday 11:00 AM · 90 min · KPTK</div></div><div class="quick-row"><div class="top"><strong>Instrument simulator</strong><span class="badge green">Ready</span></div><div class="meta">Thursday 4:00 PM · Bay 2 · Instructor confirmed</div></div><div class="quick-row"><div class="top"><strong>Commercial checkout</strong><span class="badge red">Conflict</span></div><div class="meta">Friday 2:00 PM · Same instructor requested elsewhere</div></div></div></div><div class="alert"><strong>Conflict spotlight</strong><p>Ken Rose requested Friday between 1:30 PM and 3:30 PM. Shared demand overlaps Laura Chen and aircraft N736PB, so the best guided swap is Marcus Hale with N552PB.</p></div><div><div class="section-head" style="margin-bottom:10px"><div><h3>Instructor load</h3><p>Current week utilization.</p></div></div><div class="quick-list"><div class="quick-row"><div class="top"><strong>Laura Chen</strong><span>92%</span></div><div class="meta">IFR, private, stage checks</div></div><div class="quick-row"><div class="top"><strong>Marcus Hale</strong><span>71%</span></div><div class="meta">Private, commercial</div></div><div class="quick-row"><div class="top"><strong>Sofia Patel</strong><span>84%</span></div><div class="meta">Cross country, ground school</div></div></div></div><div><div class="section-head" style="margin-bottom:10px"><div><h3>Aircraft readiness</h3><p>Fast fleet status checks.</p></div></div><div class="quick-list"><div class="quick-row"><div class="top"><strong>N736PB · C172</strong><span class="badge green">Available</span></div><div class="meta">95% utilization this week</div></div><div class="quick-row"><div class="top"><strong>N812PB · DA40</strong><span class="badge yellow">Inspection</span></div><div class="meta">Expected back at 1:15 PM Friday</div></div><div class="quick-row"><div class="top"><strong>N552PB · PA28</strong><span class="badge green">Available</span></div><div class="meta">Low utilization, good swap target</div></div></div></div></div></div></section>
+      <section class="view" id="view-instructors"><div class="hero"><div class="card hero-panel"><div class="eyebrow">Instructors</div><h2>See people, coverage, and specialization at a glance.</h2><p>Instructor management should feel more like a staffing command center and less like a disconnected list. This view introduces stronger profile cards, certifications, current load, and fast booking actions.</p><div class="btn-row"><button class="btn primary">Add instructor</button><button class="btn secondary">Review certifications</button></div></div><div class="card hero-side"><div class="mini-stat"><div class="label">Active instructors</div><div class="value">29</div></div><div class="mini-stat"><div class="label">High utilization</div><div class="value">7</div></div><div class="mini-stat"><div class="label">Open shifts</div><div class="value">2</div></div></div></div><div class="cards-grid" style="margin-top:18px"><div class="card person-card"><div class="person-top"><div class="photo">LC</div><div><strong>Laura Chen</strong><div class="muted">CFI, CFII</div></div></div><div class="split"><span class="muted">Utilization</span><strong>92%</strong></div><div class="split"><span class="muted">Specialties</span><strong>IFR, Stage Checks</strong></div><div class="pill-row"><span class="badge yellow">Heavy load</span><span class="badge">KPTK</span></div></div><div class="card person-card"><div class="person-top"><div class="photo">MH</div><div><strong>Marcus Hale</strong><div class="muted">CFI, Commercial</div></div></div><div class="split"><span class="muted">Utilization</span><strong>71%</strong></div><div class="split"><span class="muted">Specialties</span><strong>Private, Commercial</strong></div><div class="pill-row"><span class="badge green">Available capacity</span><span class="badge">KPTK</span></div></div><div class="card person-card"><div class="person-top"><div class="photo">SP</div><div><strong>Sofia Patel</strong><div class="muted">CFI, Ground School</div></div></div><div class="split"><span class="muted">Utilization</span><strong>84%</strong></div><div class="split"><span class="muted">Specialties</span><strong>Cross country, Theory</strong></div><div class="pill-row"><span class="badge">Ground</span><span class="badge">Weekend lead</span></div></div></div></section>
+      <section class="view" id="view-aircraft"><div class="hero"><div class="card hero-panel"><div class="eyebrow">Aircraft</div><h2>Make fleet readiness obvious before the day gets chaotic.</h2><p>This concept turns aircraft into operational cards with clearer availability, next reservation, maintenance windows, and assignment cues so schedulers can make decisions faster.</p><div class="btn-row"><button class="btn primary">Add aircraft</button><button class="btn secondary">Open maintenance board</button></div></div><div class="card hero-side"><div class="mini-stat"><div class="label">Fleet size</div><div class="value">18</div></div><div class="mini-stat"><div class="label">Ready now</div><div class="value">16</div></div><div class="mini-stat"><div class="label">Maintenance due soon</div><div class="value">3</div></div></div></div><div class="cards-grid" style="margin-top:18px"><div class="card aircraft-card"><div class="aircraft-top"><div class="plane">C17</div><div><strong>N736PB</strong><div class="muted">Cessna 172 · G1000</div></div></div><div class="split"><span class="muted">Status</span><strong>Available</strong></div><div class="split"><span class="muted">Next block</span><strong>11:00 AM Discovery</strong></div><div class="pill-row"><span class="badge green">Ready</span><span class="badge">High demand</span></div></div><div class="card aircraft-card"><div class="aircraft-top"><div class="plane">DA4</div><div><strong>N812PB</strong><div class="muted">Diamond DA40</div></div></div><div class="split"><span class="muted">Status</span><strong>Inspection</strong></div><div class="split"><span class="muted">Expected ready</span><strong>1:15 PM Friday</strong></div><div class="pill-row"><span class="badge yellow">Hold assignments</span><span class="badge">Maintenance</span></div></div><div class="card aircraft-card"><div class="aircraft-top"><div class="plane">PA2</div><div><strong>N552PB</strong><div class="muted">Piper PA28</div></div></div><div class="split"><span class="muted">Status</span><strong>Available</strong></div><div class="split"><span class="muted">This week use</span><strong>61%</strong></div><div class="pill-row"><span class="badge green">Good swap target</span><span class="badge">Cross country</span></div></div></div></section>
+    </div>
+  </main>
+</div>
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="reservationDrawer"><div class="drawer-head"><div><div class="eyebrow">Reservation flow</div><h3 style="margin:10px 0 4px">Create reservation</h3><div class="muted">A cleaner, more guided version of the current reservation experience for Ken Rose.</div></div><button class="btn secondary" id="closeDrawer">Close</button></div><div class="drawer-body"><div class="field-grid"><div class="field"><label>Pilot</label><input value="Ken Rose" /></div><div class="field"><label>Program</label><select><option>Private Pilot</option><option>Instrument</option></select></div><div class="field"><label>Reservation type</label><select><option>Flight lesson</option><option>Discovery flight</option><option>Simulator</option></select></div><div class="field"><label>Location</label><select><option>KPTK Main Campus</option></select></div><div class="field"><label>Reservation date</label><input type="date" value="2026-03-20" /></div><div class="field"><label>Alternate date</label><input type="date" value="2026-03-21" /></div><div class="field"><label>Start time</label><input type="time" value="14:00" step="900" /></div><div class="field"><label>Flexible start time</label><input type="time" value="14:30" step="900" /></div><div class="field"><label>Duration</label><select><option>90 minutes</option><option>120 minutes</option></select></div><div class="field"><label>Aircraft preference</label><select><option>Any available C172</option><option>N736PB</option><option>N552PB</option></select></div><div class="field"><label>Instructor</label><select><option>Auto assign best match</option><option>Laura Chen</option><option>Marcus Hale</option></select></div><div class="field"><label>Mission / notes</label><input value="Solo prep pattern work" /></div></div><div class="demo-panel"><strong>Scheduling intelligence</strong><div class="timeline"><div class="step"><strong>Best match surfaced</strong><div class="muted">Marcus Hale and N552PB fit the requested block with no overlap.</div></div><div class="step"><strong>Warning</strong><div class="muted">Laura Chen conflicts with IFR block at 2:00 PM Friday.</div></div><div class="step"><strong>Recommendation</strong><div class="muted">Keep requested time and auto assign Marcus Hale.</div></div></div></div><div class="btn-row"><button class="btn primary" id="saveReservation">Save reservation</button><button class="btn secondary">Check alternatives</button></div></div></aside>
+<script>
+const titles = { home: ['Home', 'A cleaner control center for flight operations and training.'], training: ['My Training', 'Progress, next milestones, and training readiness in one place.'], schedule: ['Schedule', 'Operational scheduling, reservations, conflicts, and fleet readiness.'], instructors: ['Instructors', 'Coverage, utilization, specialties, and fast staffing actions.'], aircraft: ['Aircraft', 'Fleet status, assignment awareness, and maintenance visibility.'] };
+const navButtons = document.querySelectorAll('.nav-btn[data-view]');
+const views = document.querySelectorAll('.view');
+const pageTitle = document.getElementById('pageTitle');
+const pageSubtitle = document.getElementById('pageSubtitle');
+function setView(view){ navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.view === view)); views.forEach(v => v.classList.toggle('active', v.id === 'view-' + view)); pageTitle.textContent = titles[view][0]; pageSubtitle.textContent = titles[view][1]; }
+navButtons.forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+document.querySelectorAll('[data-nav]').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.nav)));
+const loginScreen = document.getElementById('loginScreen'); const appShell = document.getElementById('appShell'); document.getElementById('enterBtn').addEventListener('click', () => { loginScreen.classList.add('hidden'); appShell.classList.remove('hidden'); });
+const drawer = document.getElementById('reservationDrawer'); const drawerBackdrop = document.getElementById('drawerBackdrop');
+function openDrawer(){ drawer.classList.add('open'); drawerBackdrop.classList.add('open'); }
+function closeDrawer(){ drawer.classList.remove('open'); drawerBackdrop.classList.remove('open'); }
+['quickReservation','heroReservation','newResSchedule','mobileReservation'].forEach(id => { const el = document.getElementById(id); if(el) el.addEventListener('click', openDrawer); });
+document.getElementById('closeDrawer').addEventListener('click', closeDrawer); drawerBackdrop.addEventListener('click', closeDrawer);
+document.getElementById('saveReservation').addEventListener('click', () => { closeDrawer(); setView('schedule'); alert('Mockup only: reservation saved and added to the Friday queue.'); });
+document.getElementById('publishBtn').addEventListener('click', () => alert('Mockup only: weekly schedule published to students, instructors, and operations staff.'));
+document.getElementById('fixConflicts').addEventListener('click', () => { setView('schedule'); openDrawer(); });
+document.getElementById('jumpToday').addEventListener('click', () => { setView('schedule'); document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' }); });
+const dailyRowPlan = {
+  0: [0, 1, 3, 5, 7],
+  1: [1, 2, 4, 6, 8],
+  2: [0, 2, 3, 6, 8],
+  3: [1, 3, 4, 7, 9],
+  4: [0, 2, 5, 7, 8],
+  5: [1, 3, 5, 6],
+  6: [0, 2, 4, 7]
+};
+
+const codes = [
+  'PB 201','PB 318','PB 411','PB 122','PB 452','PB 610','PB 702','PB 810','PB 510','PB 533',
+  'PB 890','PB 915','PB 944','PB 377','PB 688','PB 265','PB 419','PB 805','PB 144','PB 721',
+  'PB 231','PB 346','PB 472','PB 588','PB 614','PB 730','PB 841','PB 956','PB 167','PB 284',
+  'PB 399','PB 425','PB 547','PB 663','PB 774','PB 889','PB 908','PB 119'
+];
+
+const sharedRoutes = [
+  'Shared primary',
+  'Shared XC',
+  'Shared checkout',
+  'Shared stage',
+  'Shared sim',
+  'Shared lesson',
+  'Shared intro',
+  'Shared review',
+  'Shared dispatch',
+  'Shared block'
+];
+
+const kenRoutes = [
+  'Ken · Pattern',
+  'Ken · Solo prep',
+  'Ken · Review',
+  'Ken · Check prep',
+  'Ken · Crosswind'
+];
+
+const sharedColors = ['blue','yellow','green'];
+const kenSlots = new Set(['0-1','2-3','4-5','6-7']);
+
+function buildDenseFlights(){
+  const flights = [];
+  let codeIndex = 0;
+
+  for(let day = 0; day < 7; day++){
+    const rows = dailyRowPlan[day];
+
+    rows.forEach((row, idx) => {
+      const isKen = kenSlots.has(`${day}-${row}`);
+      flights.push({
+        day,
+        row,
+        color: isKen ? 'orange' : sharedColors[(day + idx) % sharedColors.length],
+        code: codes[codeIndex % codes.length],
+        route: isKen ? kenRoutes[(day + idx) % kenRoutes.length] : sharedRoutes[(day * 2 + idx) % sharedRoutes.length],
+        foot1: isKen ? 'Ken Rose' : 'Occupied',
+        foot2: isKen ? 'Editable' : 'Read only',
+        isKen
+      });
+      codeIndex++;
+    });
+
+    if(day === 1 || day === 4 || day === 5){
+      const stackedRow = rows[rows.length - 1];
+      flights.push({
+        day,
+        row: stackedRow,
+        color: 'blue',
+        code: codes[codeIndex % codes.length],
+        route: 'Shared overlap',
+        foot1: 'Occupied',
+        foot2: 'Read only',
+        isKen: false
+      });
+      codeIndex++;
+    }
+  }
+
+  return flights;
+}
+
+const flights = buildDenseFlights();
+function buildCalendar(){
+  const grid = document.getElementById('calendarGrid'); const times = ['7 AM','8 AM','9 AM','10 AM','11 AM','12 PM','1 PM','2 PM','3 PM','4 PM']; grid.innerHTML='';
+  times.forEach((time,rowIdx) => { const timeCell=document.createElement('div'); timeCell.className='time-cell'; timeCell.textContent=time; grid.appendChild(timeCell); for(let day=0; day<7; day++){ const slot=document.createElement('div'); slot.className='slot'; const found=flights.filter(f=>f.day===day && f.row===rowIdx); found.forEach((f,i)=>{ const flight=document.createElement('div'); flight.className='flight '+f.color + (f.isKen ? '' : ' ghost'); flight.style.inset = (8 + i*4) + 'px'; flight.innerHTML = '<div><div class="code">'+f.code+'</div><div class="route">'+f.route+'</div></div><div class="foot"><span>'+f.foot1+'</span><span>'+f.foot2+'</span></div>'; if(f.isKen){ flight.addEventListener('click', openDrawer); } else { flight.title = 'Shared reservation visible to Ken. Details are intentionally limited in this concept.'; } slot.appendChild(flight); }); grid.appendChild(slot); } });
+}
+buildCalendar();
+</script>
+</body>
+</html>
